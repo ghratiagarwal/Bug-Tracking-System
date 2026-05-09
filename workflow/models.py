@@ -1,8 +1,18 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User as AuthUser
 from django.utils import timezone
 
-User=get_user_model()
+
+
+class User(models.Model):
+    auth_user = models.OneToOneField(AuthUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    role = models.CharField(max_length=10)
+    skills = models.TextField()
+
+    def __str__(self):
+        return self.name
 
 
 class Task(models.Model):
@@ -20,21 +30,17 @@ class Task(models.Model):
     task_type =models.CharField(max_length=10)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.TODO)
     priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
-
     created_by =models.ForeignKey(User,on_delete=models.CASCADE,related_name='task_created')
     assigned_to =models.ForeignKey(User,on_delete=models.CASCADE,related_name='task_assigned')
+    collaborators=models.ManyToManyField(User,blank=True)
     created_at =models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-   
+    def __str__(self):
+        return self.title
 
 class Comment(models.Model):
-    task =models.ForeignKey(Task,on_delete=models.CASCADE)
+    task =models.ForeignKey(Task,on_delete=models.CASCADE,related_name='comments')
     user =models.ForeignKey(User,on_delete=models.CASCADE)
     comment =models.TextField()
-
-
-
-
-    
-# Create your models here
+    created_at=models.DateTimeField(auto_now_add=True)
