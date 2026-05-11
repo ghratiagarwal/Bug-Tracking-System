@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from .models import Task,Comment,User
 from .serializer import TaskSerializer,CommentSerializer
+from rest_framework.response import Response
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
@@ -15,7 +16,7 @@ class TaskViewSet(ModelViewSet):
         queryset=Task.objects.all()
         view_type=self.request.query_params.get("type")
         if view_type=="assigned_to_me":
-            queryset==queryset.filter(assigned_to=user)
+            queryset=queryset.filter(assigned_to=user)
         elif view_type=="created_by_me":
             queryset=queryset.filter(created_by=user)
         else:
@@ -34,14 +35,14 @@ class TaskViewSet(ModelViewSet):
         task = self.get_object()
         user = self.get_current_user()
 
-        status=request.data.get("status")
+        task_status=request.data.get("status")
         assigned_to_id = request.data.get("assigned_to")
 
-        if status:
-            task.status = status
+        if task_status:
+            task.status = task_status
 
         if assigned_to_id:
-            user=User.object.get(id=assigned_to_id)
+            assigned_user=User.objects.get(id=assigned_to_id)
             task.assigned_to = assigned_user
 
         task.save()
@@ -51,9 +52,10 @@ class TaskViewSet(ModelViewSet):
     def destroy(self,request,*args,**kwargs):
         task=self.get_object()
         task.delete()
-        return Response({"message":"Task deleetd successfully"})
+        return Response({"message":"Task deleted successfully"})
     
 class CommentViewSet(ModelViewSet):
+    queryset = Comment.objects.all()
     serializer_class=CommentSerializer
     permission_classes=[IsAuthenticated]
 
@@ -66,12 +68,13 @@ class CommentViewSet(ModelViewSet):
         return user
     
     def get_queryset(self):
+        
         queryset=Comment.objects.all()
         task_id=self.request.query_params.get("task")
         if task_id:
             queryset=queryset.filter(task_id=task_id)
         return queryset
     
-    def perform_created(self,serializer):
+    def perform_create(self,serializer):
         user = self.get_current_user()
         serializer.save(sender=user)
