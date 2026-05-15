@@ -5,3 +5,9 @@ __pycache__/
 db.sqlite3
 .git
 .gitignore
+node_modules
+frontend/node_modules
+.git
+frontend/build
+__pycache__
+*.pyc
