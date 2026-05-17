@@ -6,8 +6,8 @@ function AddTaskPage(){
      const navigate=useNavigate();
      const [title,setTitle] = useState("");
      const [description,setDescription]=useState("");
-     const [status,setStatus ] =useState("To Do");
-     const [priority,setPriority ] =useState("Low");
+     const [status,setStatus ] =useState("TODO");
+     const [priority,setPriority ] =useState("LOW");
      const [tasktype,setTasktype ] =useState("");
      const [assignedTo,setAssignedTo]=useState("");
      const handleSubmit = async(e) => {
@@ -19,7 +19,7 @@ function AddTaskPage(){
                 status:status,
                 task_type:tasktype,
                 priority:priority,
-                assigned_to:assignedTo
+                assigned_to:parseInt(assignedTo)
             });
             alert("Task Created Successfully");
             navigate("/dashboard");
@@ -44,15 +44,15 @@ function AddTaskPage(){
                 <input type="text" placeholder="Task Type" value={tasktype} onChange={(e) => setTasktype(e.target.value)}/>
                 <br/><br/>
                 <select value={priority} onChange={(e) => setPriority(e.target.value)} >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
                 </select>
                 <br/><br/>
                 <select value={status} onChange={(e) => setStatus(e.target.value)} >
-                    <option value="TO Do">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
+                    <option value="TODO">To Do</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="Done">DONE</option>
                 </select>
                 <br/><br/>
                 <button type="submit">Create Task</button>

@@ -1,15 +1,36 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from .models import Task,Comment,User
-from .serializer import TaskSerializer,CommentSerializer
+from .models import Task,Comment,User,Activity
+from .serializer import TaskSerializer,CommentSerializer,ActivitySerializer
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+@api_view(["GET"])
+def current_user(request):
+    user = User.objects.get(auth_user=request.user)
+    return Response({
+        "id": user.id,
+        "name": user.name,
+        "email": user.email
+        })
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
+
     def get_current_user(self):
-        return User.objects.get(auth_user=self.request.user)
+        user, created = User.objects.get_or_create(
+            auth_user=self.request.user,
+            defaults={
+                "name": self.request.user.username,
+                "email": self.request.user.email,
+                "role": "Tester",
+                "skills": "None"
+                }
+                )
+        return user
+
 
     def get_queryset(self):
         user = self.get_current_user()
@@ -54,6 +75,8 @@ class TaskViewSet(ModelViewSet):
         task.delete()
         return Response({"message":"Task deleted successfully"})
     
+    
+    
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class=CommentSerializer
@@ -76,5 +99,15 @@ class CommentViewSet(ModelViewSet):
         return queryset
     
     def perform_create(self,serializer):
-        user = self.get_current_user()
-        serializer.save(sender=user)
+        comment = serializer.save()
+        Activity.objects.create(
+            task=comment.task,
+            user=comment.user,
+            action="Added a comment"
+
+    )
+
+class ActivityViewSet(ModelViewSet):
+    queryset = Activity.objects.all()
+    serializer_class = ActivitySerializer
+    permission_classes = [IsAuthenticated]

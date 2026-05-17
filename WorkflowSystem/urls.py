@@ -20,12 +20,13 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from workflow.views import current_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
-
+    path("api/me/", current_user),
     path('api/', include('api.urls')),
 ]

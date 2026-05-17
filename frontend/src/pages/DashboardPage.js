@@ -4,6 +4,9 @@ import api from "../services/api";
 
 function DashboardPage(){
     const [tasks,setTasks]=useState([]);
+    const todoTasks = tasks.filter((task) => task.status === "TODO");
+    const inProgressTasks = tasks.filter((task) => task.status === "IN_PROGRESS");
+    const doneTasks = tasks.filter((task) => task.status === "DONE");
     const navigate = useNavigate();
     useEffect(() => {
         fetchTasks();
@@ -20,25 +23,165 @@ function DashboardPage(){
         }
     };
 
+    // DELETE TASK
+    const deleteTask = async(id) => {
+
+        try {
+
+            await api.delete(`tasks/${id}/`);
+
+            // REMOVE TASK FROM UI IMMEDIATELY
+            setTasks(tasks.filter((task) => task.id !== id));
+
+        }
+
+        catch(error) {
+
+            console.log(error);
+
+        }
+
+    };
+
+    // UPDATE TASK STATUS
+    const updateStatus = async(id) => {
+
+        try {
+
+            await api.put(`tasks/${id}/`, {
+
+                status: "Done"
+
+            });
+
+            // REFRESH TASK LIST
+            fetchTasks();
+
+        }
+
+        catch(error) {
+
+            console.log(error);
+
+        }
+
+    };
+
+
     return (
-        <div>
-            <h1>Dashboard</h1>
-            <button onClick={() => navigate("/add-task")}>Add Task</button>
-            {tasks.map((task) =>(
-                <div key={task.id}>
-                    <table border='1'>
-                    <tr>
-                    <th>Task Name</th>
-                    <th>Description</th>
-                    <th>Status</th></tr><tr>
-                    <td>{task.title}</td>
-                    <td>{task.description}</td>
-                    <td>{task.status}</td>
-                    </tr>
-                    </table>
-                </div>
-            ))}
-        </div>
+        <div
+    style={{
+        display: "flex",
+        gap: "20px",
+        alignItems: "flex-start"
+    }}
+>
+
+    {/* TODO */}
+
+    <div style={{ flex: 1 }}>
+
+        <h2>TODO</h2>
+
+        {todoTasks.map((task) => (
+
+            <div
+                key={task.id}
+                onClick={() => navigate(`/tasks/${task.id}`)}
+                style={{
+                    border: "1px solid gray",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    cursor: "pointer"
+                }}
+            >
+
+                <h3>{task.title}</h3>
+
+                <p>{task.priority}</p>
+
+            </div>
+
+        ))}
+
+    </div>
+
+    {/* IN PROGRESS */}
+
+    <div style={{ flex: 1 }}>
+
+        <h2>IN PROGRESS</h2>
+
+        {inProgressTasks.map((task) => (
+
+            <div
+                key={task.id}
+                onClick={() => navigate(`/tasks/${task.id}`)}
+                style={{
+                    border: "1px solid gray",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    cursor: "pointer"
+                }}
+            >
+
+                <h3>{task.title}</h3>
+
+                <p>{task.priority}</p>
+
+            </div>
+
+        ))}
+
+    </div>
+
+    {/* DONE */}
+
+    <div style={{ flex: 1 }}>
+
+        <h2>DONE</h2>
+
+        {doneTasks.map((task) => (
+
+            <div
+                key={task.id}
+                onClick={() => navigate(`/tasks/${task.id}`)}
+                style={{
+                    border: "1px solid gray",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    cursor: "pointer"
+                }}
+            >
+
+                <h3>{task.title}</h3>
+
+                <p>{task.priority}</p>
+
+                <select value={task.status}
+                onChange={async (e) => {
+                    try {
+                        await api.patch(`tasks/${task.id}/`, {
+                            status: e.target.value
+                        });
+                        fetchTasks();
+                    }
+                    catch(error) {
+                        console.log(error);
+                    }
+                    }}>
+                        <option value="TODO">TODO</option>
+                        <option value="IN_PROGRESS">IN_PROGRESS</option>
+                        <option value="DONE">DONE</option>
+                    </select>
+
+            </div>
+
+        ))}
+
+    </div>
+
+</div>
     );
     }
     export default DashboardPage;
