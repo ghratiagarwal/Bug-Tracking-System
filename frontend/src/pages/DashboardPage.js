@@ -69,14 +69,10 @@ function DashboardPage(){
 
 
     return (
-        <div
-    style={{
-        display: "flex",
-        gap: "20px",
-        alignItems: "flex-start"
-    }}
->
-
+        <div style={{display: "flex",gap: "20px",alignItems: "flex-start"}}>
+        <h1>Dashboard</h1>
+        <button onClick={() => navigate("/add-task")}>Create Task</button>
+        <br /><br />
     {/* TODO */}
 
     <div style={{ flex: 1 }}>

@@ -18,18 +18,20 @@ function LoginPage(){
             navigate("/dashboard");
         }
         catch(error){
-            console.log(error);
-
+            console.log(error.response?.data);
+            alert("Invalid Credentials");
         }
         };
         return (
             <div> 
                 <h2>Login</h2>
                 <form onSubmit={handleLogin}>
-                    <input type="text" placeholder="username" value={username} onChange={(e)=>setUsername(e.target.value)}/>
-                    <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
-                />
-                    <button type="submit">Login</button>
+                    <input type="text" placeholder="username" value={username} onChange={(e)=>setUsername(e.target.value)}/><br></br>
+                    <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/><br></br>
+                    <button type="submit">Login</button><br></br>
+                    <button onClick={() => navigate("/forgot-password")}>Forgot Password?</button>
+                    <br></br>
+                    Not already signed in??<button onClick={() => navigate("/")}>Signup</button><br /><br />
                 </form>
             </div>
         );

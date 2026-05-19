@@ -1,11 +1,25 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Task,Comment,User,Activity
-from .serializer import TaskSerializer,CommentSerializer,ActivitySerializer
+from .serializer import RegisterSerializer,TaskSerializer,CommentSerializer,ActivitySerializer
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework import status
 
-@api_view(["GET"])
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def register(request):
+
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"message": "User created successfully"},
+            status=status.HTTP_201_CREATED
+        )
+
+    return Response(serializer.errors, status=400)
+
 def current_user(request):
     user = User.objects.get(auth_user=request.user)
     return Response({

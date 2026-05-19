@@ -20,11 +20,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from workflow.views import current_user
+from workflow.views import current_user,register
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    path("api/register/",register),
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     path("api/me/", current_user),

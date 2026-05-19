@@ -8,13 +8,17 @@ const api=axios.create({
 api.interceptors.request.use((config) => {
 
     const token = localStorage.getItem("access");
-
-    console.log("TOKEN:", token);
-
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (
+            token &&
+            !config.url.includes("register") &&
+            !config.url.includes("token")
+        ) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-
-    return config;
-});
+);
 export default api;
