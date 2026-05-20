@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import Task,Comment,User,Activity
-from .serializer import RegisterSerializer,TaskSerializer,CommentSerializer,ActivitySerializer
+from .serializer import (RegisterSerializer,TaskSerializer,CommentSerializer,ActivitySerializer,ForgotPasswordSerializer)
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework import status
@@ -20,6 +20,20 @@ def register(request):
 
     return Response(serializer.errors, status=400)
 
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def forgot_password(request):
+
+    serializer = ForgotPasswordSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({
+            "message": "Password reset successful"
+        })
+    return Response(serializer.errors, status=400)
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
 def current_user(request):
     user = User.objects.get(auth_user=request.user)
     return Response({
@@ -27,6 +41,36 @@ def current_user(request):
         "name": user.name,
         "email": user.email
         })
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def users_list(request):
+
+    users = User.objects.all().values(
+        "id",
+        "name",
+        "email"
+    )
+
+    return Response(users)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_comment(request):
+
+    workflow_user = User.objects.get(auth_user=request.user)
+
+    data = request.data.copy()
+    data["user"] = workflow_user.id
+
+    serializer = CommentSerializer(data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors, status=400)
+
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()

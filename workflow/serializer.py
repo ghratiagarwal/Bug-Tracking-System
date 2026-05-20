@@ -29,6 +29,16 @@ class RegisterSerializer(serializers.Serializer):
     name=serializers.CharField()
     role=serializers.CharField()
     skills = serializers.CharField()
+
+    def validate_username(self, value):
+
+        if AuthUser.objects.filter(username=value).exists():
+            raise serializers.ValidationError(
+                "User already exists"
+            )
+
+        return value
+
     def create(self,validated_data):
         auth_user = AuthUser.objects.create_user(
             username=validated_data["username"],
@@ -42,3 +52,16 @@ class RegisterSerializer(serializers.Serializer):
         )
 
         return workflow_user
+    
+class ForgotPasswordSerializer(serializers.Serializer):
+
+    username = serializers.CharField()
+    new_password = serializers.CharField(write_only=True)
+    
+    def save(self):
+        username = self.validated_data["username"]
+        new_password = self.validated_data["new_password"]
+        user = AuthUser.objects.get(username=username)
+        user.set_password(new_password)
+        user.save()
+        return user

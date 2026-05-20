@@ -27,7 +27,12 @@ function SignupPage(){
         navigate("/login");
     }
     catch(error) {
-        console.log(error.response.data);
+        if (error.response?.data?.username) {
+             alert(error.response.data.username[0]);
+            }
+        else {
+             alert("Signup failed");
+            }
     }
 };
 

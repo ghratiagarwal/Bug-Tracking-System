@@ -8,7 +8,7 @@ class User(models.Model):
     auth_user = models.OneToOneField(AuthUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    role = models.CharField(max_length=10)
+    role = models.CharField(max_length=100)
     skills = models.TextField()
 
     def __str__(self):
@@ -27,6 +27,7 @@ class Task(models.Model):
         HIGH='HIGH','High'
     title =models.CharField(max_length=200)
     description =models.TextField()
+    screenshot = models.ImageField(upload_to="screenshots/",null=True,blank=True)
     task_type =models.CharField(max_length=10)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.TODO)
     priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
@@ -43,6 +44,7 @@ class Comment(models.Model):
     task =models.ForeignKey(Task,on_delete=models.CASCADE,related_name='comments')
     user =models.ForeignKey(User,on_delete=models.CASCADE)
     comment =models.TextField()
+    screenshot = models.ImageField(upload_to="comments/",null=True,blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
 
 
