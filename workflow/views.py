@@ -5,6 +5,7 @@ from .serializer import (RegisterSerializer,TaskSerializer,CommentSerializer,Act
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework import status
+from .tasks import send_task_notification
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -109,6 +110,7 @@ class TaskViewSet(ModelViewSet):
     def perform_create(self, serializer):
         user = self.get_current_user()
         serializer.save(created_by=user)
+        send_task_notification.delay(task.title.task.assigned_to.email)
 
     def update(self,request,*args,**kwargs):
         task = self.get_object()

@@ -2,19 +2,22 @@ from rest_framework import serializers
 from django.contrib.auth.models import User as AuthUser
 from .models import *
 
-class TaskSerializer(serializers.ModelSerializer):
-    created_by=serializers.ReadOnlyField(source='sender.name')
-    created_by = serializers.StringRelatedField()
-    class Meta:
-        model = Task
-        fields= "__all__"
+
        
 
 class CommentSerializer(serializers.ModelSerializer):
     sender=serializers.ReadOnlyField(source='sender.name')
     class Meta:
-         model=Comment
-         fields="__all__"
+        model=Comment
+        fields = "__all__"
+
+class TaskSerializer(serializers.ModelSerializer):
+    created_by=serializers.ReadOnlyField(source='sender.name')
+    created_by = serializers.StringRelatedField()
+    comments = CommentSerializer(many=True, read_only=True)
+    class Meta:
+        model = Task
+        fields = "__all__"
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -36,7 +39,6 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "User already exists"
             )
-
         return value
 
     def create(self,validated_data):

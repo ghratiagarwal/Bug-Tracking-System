@@ -184,8 +184,7 @@ function TaskDetailPage() {
                         padding: "10px 20px",
                         borderRadius: "8px",
                         cursor: "pointer"
-                    }}
-                >
+                        }}>
                     Add Comment
                 </button>
 

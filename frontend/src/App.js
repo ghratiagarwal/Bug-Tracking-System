@@ -6,6 +6,7 @@ import AddTaskPage from "./pages/AddTaskPage";
 import TaskDetailPage from "./pages/TaskDetailPage";
 import SignupPage from "./pages/SignupPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import WorkspacePage from "./pages/WorkspacePage";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/add-task" element={<AddTaskPage />} />
                 <Route path="/tasks/:id" element={<TaskDetailPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />}/>
+                <Route path="/workspace" element={<WorkspacePage/>}/>
                 
             </Routes>
 

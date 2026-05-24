@@ -8,7 +8,7 @@ function DashboardPage(){
     const [tasks,setTasks]=useState([]);
     const todoTasks = tasks.filter((task) => task.status === "TODO");
     const inProgressTasks = tasks.filter((task) => task.status === "IN_PROGRESS");
-    const doneTasks = tasks.filter((task) => task.status === "DONE");
+    const doneTasks = tasks.filter((task) => task.status === "Done");
     const navigate = useNavigate();
     useEffect(() => {
         fetchTasks();
@@ -49,14 +49,12 @@ function DashboardPage(){
     };
 
     return (
-  <div className="dashboard-container">
-
-    <div className="dashboard-header">
-      <h1>Project Board</h1>
-
-      <button
-        className="create-btn"
-        onClick={() => navigate("/add-task")}
+    <div className="dashboard-container">
+        <div className="dashboard-header">
+            <h1>Project Board</h1>
+            <button
+            className="create-btn"
+            onClick={() => navigate("/add-task")}
       >
         + Create Task
       </button>
@@ -78,6 +76,12 @@ function DashboardPage(){
             onClick={() => navigate(`/tasks/${task.id}`)}
           >
             <h3>{task.title}</h3>
+
+            {task.screenshot && (
+              <img
+              src={task.screenshot}
+              alt="task"
+              className="dashboard-task-image"/>)}
 
             <p className="priority">{task.priority}</p>
 
