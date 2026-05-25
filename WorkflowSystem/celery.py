@@ -1,7 +1,7 @@
 from celery import Celery
 import os
 
-os.enciron.setdefault(
+os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE",
     "WorkflowSystem.settings"
 )

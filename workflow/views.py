@@ -109,8 +109,8 @@ class TaskViewSet(ModelViewSet):
     
     def perform_create(self, serializer):
         user = self.get_current_user()
-        serializer.save(created_by=user)
-        send_task_notification.delay(task.title.task.assigned_to.email)
+        task=serializer.save(created_by=user)
+        send_task_notification.delay(task.title,task.assigned_to.email)
 
     def update(self,request,*args,**kwargs):
         task = self.get_object()
