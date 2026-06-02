@@ -2,55 +2,127 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-function SignupPage(){
+function SignupPage() {
     const navigate = useNavigate();
-    const [username,setUsername]=useState("");
-    const [password,setPassword]=useState("");
-    const [email,setEmail]=useState("");
-    const [name,setName]=useState("");
-    const [role,setRole]=useState("");
-    const [skills,setSkills]=useState("");
+    
+    // Controlled component state declarations
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [role, setRole] = useState("");
+    const [skills, setSkills] = useState("");
+    const [loading, setLoading] = useState(false); // UI state indicating request flight
 
     const handleSignup = async (e) => {
-        e.preventDefault();
-        try { 
-            await api.post("register/", {
+        e.preventDefault(); // Prevents standard browser page reload behavior
+        setLoading(true);
+
+        try {
+            // Mapping payload parameters precisely to match Django's RegisterSerializer fields
+            const response = await api.post("register/", {
                 username: username,
-                password:password,
-                email:email,
-                name:name,
-                role:role,
-                skills:skills
-
-            })
-        alert("Account Created Successfully");
-        navigate("/login");
-    }
-    catch(error) {
-        if (error.response?.data?.username) {
-             alert(error.response.data.username[0]);
+                password: password,
+                email: email,
+                first_name: firstName,
+                last_name: lastName,
+                role: role,
+                skills: skills
+            });
+            if (response.data.token) {
+                localStorage.setItem("authToken", response.data.token);
             }
-        else {
-             alert("Signup failed");
+
+            alert("Account Created Successfully");
+            navigate("/dashboard");
+        } catch (error) {
+            if (error.response?.data) {
+                const serverErrors = error.response.data;
+                // Extract the first error message dynamically from whichever field failed validation
+                const firstErrorKey = Object.keys(serverErrors)[0];
+                const errorMessage = serverErrors[firstErrorKey];
+                
+                alert(`${firstErrorKey}: ${Array.isArray(errorMessage) ? errorMessage[0] : errorMessage}`);
+            } else {
+                alert("Network communication failure. Please check your connection.");
             }
-    }
-};
+        } finally {
+            setLoading(false);
+        }
+    };
 
-return (
-    <div>
-    <h1>Signup</h1>
-    <form onSubmit={handleSignup}>
-    <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}/><br /><br />
-    <input type="password"placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/><br /><br />
-    <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/><br /><br />
-    <input type="text" placeholder="Full Name"  value={name} onChange={(e) => setName(e.target.value)}/><br /><br />
-    <input type="text" placeholder="Role" value={role} onChange={(e) => setRole(e.target.value)} /><br /><br />
-    <textarea placeholder="Skills" value={skills} onChange={(e) => setSkills(e.target.value)}/><br /><br />
-    <button type="submit"> Signup</button><br></br>
-    already signed in??<button onClick={() => navigate("/login")}>Login</button><br /><br />
-    </form>
-    </div>
+    return (
+        <div style={{ padding: "20px" }}>
+            <h1>System Registration</h1>
+            <form onSubmit={handleSignup}>
+                <input 
+                    type="text" 
+                    placeholder="Username" 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    required 
+                /><br /><br />
+                
+                <input 
+                    type="password" 
+                    placeholder="Password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    required 
+                /><br /><br />
+                
+                <input 
+                    type="email" 
+                    placeholder="Email Address" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    required 
+                /><br /><br />
+                
+                <input 
+                    type="text" 
+                    placeholder="First Name" 
+                    value={firstName} 
+                    onChange={(e) => setFirstName(e.target.value)} 
+                    required 
+                /><br /><br />
 
+                <input 
+                    type="text" 
+                    placeholder="Last Name" 
+                    value={lastName} 
+                    onChange={(e) => setLastName(e.target.value)} 
+                    required 
+                /><br /><br />
+                
+                <input 
+                    type="text" 
+                    placeholder="Professional Role (e.g. Frontend Dev)" 
+                    value={role} 
+                    onChange={(e) => setRole(e.target.value)} 
+                    required 
+                /><br /><br />
+                
+                <textarea 
+                    placeholder="Core Technical Skills (comma separated)" 
+                    value={skills} 
+                    onChange={(e) => setSkills(e.target.value)}
+                /><br /><br />
+                
+                {/* Submit button state managed dynamically via tracking variable */}
+                <button type="submit" disabled={loading}>
+                    {loading ? "Registering System User..." : "Signup"}
+                </button>
+                <br /><br />
+                
+                <span>Already signed in? </span>
+                {/* Explicit declaration of type="button" to prevent accidental form submissions */}
+                <button type="button" onClick={() => navigate("/login")}>
+                    Login
+                </button>
+            </form>
+        </div>
     );
 }
 

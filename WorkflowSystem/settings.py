@@ -46,13 +46,8 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     )
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=480),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 CORS_ALLOWED_ORIGINS = [
@@ -64,6 +59,8 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+
+CELERY_RESULT_BACKEND = "django-db"
 
 CELERY_ACCEPT_CONTENT = ["json"]
 
